@@ -1,5 +1,8 @@
 import json
 import sys
+import random
+import math
+import numpy as np
 
 teams = ["Arsenal", "Bournemouth", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Huddersfield", "Leicester", "Liverpool", "Man City", "Man United", "Newcastle", "Southampton", "Stoke", "Swansea", "Tottenham", "Watford", "West Brom", "West Ham"]
 teamData = []
@@ -37,8 +40,76 @@ for team in teams:
                     awayGoalCount += awayGoals
                     awayGoalsConcededCount += homeGoals
 
+        avgHomeGoals = homeGoalCount/19
+        avgAwayGoals = awayGoalCount/19
+        avgHomeConceded = homeGoalsConcededCount/19
+        avgAwayConceded = awayGoalsConcededCount/19
         # print(team + " scored " + str(goalCount) + " goals last season! (" + str(homeGoalCount) + " at home and " + str(awayGoalCount) + " away)")
-        teamData.append({'Name': team , 'HomeGoals': homeGoalCount, 'AwayGoals': awayGoalCount , 'HomeConceded': homeGoalsConcededCount, 'AwayConceded': awayGoalsConcededCount , 'HomeWins': homeWinCount , 'AwayWins': awayWinCount})
+        teamData.append({'Name': team , 'HomeGoals': homeGoalCount, 'AwayGoals': awayGoalCount , 'AverageHomeGoals': avgHomeGoals, 'AverageAwayGoals': avgAwayGoals, 'HomeConceded': homeGoalsConcededCount, 'AwayConceded': awayGoalsConcededCount , 'AverageHomeConceded': avgHomeConceded, 'AverageAwayConceded': avgAwayConceded, 'HomeWins': homeWinCount , 'AwayWins': awayWinCount})
 
+overallAvgHomeGoals = 0
+overallAvgAwayGoals = 0
+totalAvgHomeGoals = 0
+totalAvgAwayGoals = 0
+overallAvgHomeConceded = 0
+overallAvgAwayConceded = 0
+totalAvgHomeConceded = 0
+totalAvgAwayConceded = 0
 for team in teamData:
-    print(team)
+    totalAvgHomeGoals += team["AverageHomeGoals"]
+    totalAvgAwayGoals += team["AverageAwayGoals"]
+    totalAvgHomeConceded += team["AverageHomeConceded"]
+    totalAvgAwayConceded += team["AverageAwayConceded"]
+
+overallAvgHomeGoals = totalAvgHomeGoals / len(teams)
+overallAvgAwayGoals = totalAvgAwayGoals / len(teams)
+overallAvgHomeConceded = totalAvgHomeConceded / len(teams)
+overallAvgAwayConceded = totalAvgAwayConceded / len(teams)
+
+#Generate Random fixture list
+n = len(teams)
+matches = []
+fixtures = []
+return_matches = []
+
+shuffledTeams = teams
+random.shuffle(shuffledTeams)
+
+for fixture in range(1, n):
+    for i in range(n//2):
+        matches.append((shuffledTeams[i], shuffledTeams[n - 1 - i]))
+        return_matches.append((shuffledTeams[n - 1 - i], shuffledTeams[i]))
+    teams.insert(1, shuffledTeams.pop())
+    fixtures.insert(len(fixtures)//2, matches)
+    fixtures.append(return_matches)
+    matches = []
+    return_matches = []
+
+matchDay = 1
+print("------------------------------------------------------------")
+for fixture in fixtures:
+    print("Matchday " + str(matchDay) + ":")
+    matchDay += 1
+    for match in fixture:
+        homeTeamAttackStrength = 0
+        homeTeamDefenseStrength = 0
+        awayTeamAttackStrength = 0
+        awayTeamDefenseStrength = 0
+        homeFTGoals = 0
+        awayFTGoals = 0
+        for team in teamData:
+            #Home Team
+            if team["Name"] == match[0]:
+                homeTeamAttackStrength = team["AverageHomeGoals"] / overallAvgHomeGoals
+                homeTeamDefenseStrength = team["AverageHomeConceded"] / overallAvgHomeConceded
+            if team["Name"] == match[1]:
+                awayTeamAttackStrength = team["AverageAwayGoals"] / overallAvgAwayGoals
+                awayTeamDefenseStrength = team["AverageAwayConceded"] / overallAvgAwayConceded
+
+        homeLambda = overallAvgHomeGoals * homeTeamAttackStrength * awayTeamDefenseStrength
+        awayLambda = overallAvgAwayGoals * awayTeamAttackStrength * homeTeamDefenseStrength
+
+        homeFTGoals = np.random.poisson(homeLambda)
+        awayFTGoals = np.random.poisson(awayLambda)
+        print(match[0] + " " + str(homeFTGoals) + " - " + str(awayFTGoals) + " " + match[1])
+    print("------------------------------------------------------------")
