@@ -7,6 +7,11 @@ import numpy as np
 teams = ["Arsenal", "Bournemouth", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Huddersfield", "Leicester", "Liverpool", "Man City", "Man United", "Newcastle", "Southampton", "Stoke", "Swansea", "Tottenham", "Watford", "West Brom", "West Ham"]
 teamData = []
 
+# Simulation Variables
+numSeasons = 100
+searchTeam = False
+searchTeamName = "Brighton"
+
 print("Loading Data from JSON...")
 # Load data from 17/18 season results
 for team in teams:
@@ -71,51 +76,57 @@ overallAvgAwayGoals = totalAvgAwayGoals / len(teams)
 overallAvgHomeConceded = totalAvgHomeConceded / len(teams)
 overallAvgAwayConceded = totalAvgAwayConceded / len(teams)
 
-#Generate Random fixture list
-n = len(teams)
-matches = []
-fixtures = []
-return_matches = []
-
-shuffledTeams = teams
-random.shuffle(shuffledTeams)
-
-for fixture in range(1, n):
-    for i in range(n//2):
-        matches.append((shuffledTeams[i], shuffledTeams[n - 1 - i]))
-        return_matches.append((shuffledTeams[n - 1 - i], shuffledTeams[i]))
-    teams.insert(1, shuffledTeams.pop())
-    fixtures.insert(len(fixtures)//2, matches)
-    fixtures.append(return_matches)
+for i in range(numSeasons):
+    print("--- Season " + str(i) + " ---")
+    #Generate Random fixture list
+    n = len(teams)
     matches = []
+    fixtures = []
     return_matches = []
 
-matchDay = 1
-print("------------------------------------------------------------")
-# Work out results based on poisson distribution
-for fixture in fixtures:
-    print("Matchday " + str(matchDay) + ":")
-    matchDay += 1
-    for match in fixture:
-        homeTeamAttackStrength = 0
-        homeTeamDefenseStrength = 0
-        awayTeamAttackStrength = 0
-        awayTeamDefenseStrength = 0
-        homeFTGoals = 0
-        awayFTGoals = 0
-        for team in teamData:
-            #Home Team
-            if team["Name"] == match[0]:
-                homeTeamAttackStrength = team["AverageHomeGoals"] / overallAvgHomeGoals
-                homeTeamDefenseStrength = team["AverageHomeConceded"] / overallAvgHomeConceded
-            if team["Name"] == match[1]:
-                awayTeamAttackStrength = team["AverageAwayGoals"] / overallAvgAwayGoals
-                awayTeamDefenseStrength = team["AverageAwayConceded"] / overallAvgAwayConceded
+    shuffledTeams = teams
+    random.shuffle(shuffledTeams)
 
-        homeLambda = overallAvgHomeGoals * homeTeamAttackStrength * awayTeamDefenseStrength
-        awayLambda = overallAvgAwayGoals * awayTeamAttackStrength * homeTeamDefenseStrength
+    for fixture in range(1, n):
+        for i in range(n//2):
+            matches.append((shuffledTeams[i], shuffledTeams[n - 1 - i]))
+            return_matches.append((shuffledTeams[n - 1 - i], shuffledTeams[i]))
+        teams.insert(1, shuffledTeams.pop())
+        fixtures.insert(len(fixtures)//2, matches)
+        fixtures.append(return_matches)
+        matches = []
+        return_matches = []
 
-        homeFTGoals = np.random.poisson(homeLambda)
-        awayFTGoals = np.random.poisson(awayLambda)
-        print(match[0] + " " + str(homeFTGoals) + " - " + str(awayFTGoals) + " " + match[1])
+    matchDay = 1
     print("------------------------------------------------------------")
+    # Work out results based on poisson distribution
+    for fixture in fixtures:
+        print("Matchday " + str(matchDay) + ":")
+        matchDay += 1
+        for match in fixture:
+            homeTeamAttackStrength = 0
+            homeTeamDefenseStrength = 0
+            awayTeamAttackStrength = 0
+            awayTeamDefenseStrength = 0
+            homeFTGoals = 0
+            awayFTGoals = 0
+            for team in teamData:
+                #Home Team
+                if team["Name"] == match[0]:
+                    homeTeamAttackStrength = team["AverageHomeGoals"] / overallAvgHomeGoals
+                    homeTeamDefenseStrength = team["AverageHomeConceded"] / overallAvgHomeConceded
+                if team["Name"] == match[1]:
+                    awayTeamAttackStrength = team["AverageAwayGoals"] / overallAvgAwayGoals
+                    awayTeamDefenseStrength = team["AverageAwayConceded"] / overallAvgAwayConceded
+
+            homeLambda = overallAvgHomeGoals * homeTeamAttackStrength * awayTeamDefenseStrength
+            awayLambda = overallAvgAwayGoals * awayTeamAttackStrength * homeTeamDefenseStrength
+
+            homeFTGoals = np.random.poisson(homeLambda)
+            awayFTGoals = np.random.poisson(awayLambda)
+            if searchTeam:
+                if match[0] == searchTeamName or match[1] == searchTeamName:
+                    print(match[0] + " " + str(homeFTGoals) + " - " + str(awayFTGoals) + " " + match[1])
+            else:
+                print(match[0] + " " + str(homeFTGoals) + " - " + str(awayFTGoals) + " " + match[1])
+        print("------------------------------------------------------------")
