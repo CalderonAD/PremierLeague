@@ -8,9 +8,9 @@ teams = ["Arsenal", "Bournemouth", "Brighton", "Burnley", "Chelsea", "Crystal Pa
 teamData = []
 
 # Simulation Variables
-numSeasons = 100
-searchTeam = False
-searchTeamName = "Brighton"
+numSeasons = 1
+searchTeam = True
+searchTeamName = "Liverpool"
 
 print("Loading Data from JSON...")
 # Load data from 17/18 season results
@@ -76,8 +76,9 @@ overallAvgAwayGoals = totalAvgAwayGoals / len(teams)
 overallAvgHomeConceded = totalAvgHomeConceded / len(teams)
 overallAvgAwayConceded = totalAvgAwayConceded / len(teams)
 
+print("------------------------------------------------------------")
 for i in range(numSeasons):
-    print("--- Season " + str(i) + " ---")
+    print("--- Season " + str(i+1) + " ---")
     #Generate Random fixture list
     n = len(teams)
     matches = []
