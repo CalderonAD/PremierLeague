@@ -14,6 +14,7 @@ for team in teams:
     awayWinCount = 0
     homeGoalsConcededCount = 0
     awayGoalsConcededCount = 0
+    drawCount = 0
     with open('data/premierleague.json') as json_file:
         data = json.load(json_file)
         for match in data:
@@ -27,18 +28,39 @@ for team in teams:
                 if homeTeam == team:
                     if homeGoals > awayGoals:
                         homeWinCount += 1
+                    if homeGoals == awayGoals:
+                        drawCount += 1
                     goalCount += homeGoals
                     homeGoalCount += homeGoals
                     homeGoalsConcededCount += awayGoals
                 else:
                     if awayGoals > homeGoals:
                         awayWinCount += 1
+                    if awayGoals == homeGoals:
+                        drawCount += 1
                     goalCount += awayGoals
                     awayGoalCount += awayGoals
                     awayGoalsConcededCount += homeGoals
 
         # print(team + " scored " + str(goalCount) + " goals last season! (" + str(homeGoalCount) + " at home and " + str(awayGoalCount) + " away)")
-        teamData.append({'Name': team , 'HomeGoals': homeGoalCount, 'AwayGoals': awayGoalCount , 'HomeConceded': homeGoalsConcededCount, 'AwayConceded': awayGoalsConcededCount , 'HomeWins': homeWinCount , 'AwayWins': awayWinCount})
+        teamData.append({'Name': team , 'HomeGoals': homeGoalCount, 'AwayGoals': awayGoalCount , 'HomeConceded': homeGoalsConcededCount, 'AwayConceded': awayGoalsConcededCount , 'HomeWins': homeWinCount , 'AwayWins': awayWinCount , 'Draws': drawCount})
 
+print("---------------------------------------")
 for team in teamData:
-    print(team)
+    teamName = team["Name"]
+    goalsFor = team["HomeGoals"] + team["AwayGoals"]
+    goalsAgainst = team["HomeConceded"] + team["AwayConceded"]
+    goalDifference = goalsFor - goalsAgainst
+    goalsPerGame = goalsFor / 38
+    points = (team["HomeWins"] * 3) + (team["AwayWins"]*3) + team["Draws"]
+    pointsPerGame = points / 38
+
+    print("Name: " + teamName)
+    print("Goals For: " + str(goalsFor))
+    print("Goals Against: " + str(goalsAgainst))
+    print("Goal Difference: " + str(goalDifference))
+    print("Goals Per Game: " + str(round(goalsPerGame,2)))
+    print("Points: " + str(points))
+    print("Points Per Game: " + str(round(pointsPerGame,2)))
+
+    print("---------------------------------------")
