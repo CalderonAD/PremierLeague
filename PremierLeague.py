@@ -17,6 +17,7 @@ for team in teams:
     awayWinCount = 0
     homeGoalsConcededCount = 0
     awayGoalsConcededCount = 0
+    drawCount = 0
     with open('data/premierleague.json') as json_file:
         data = json.load(json_file)
         for match in data:
@@ -30,12 +31,16 @@ for team in teams:
                 if homeTeam == team:
                     if homeGoals > awayGoals:
                         homeWinCount += 1
+                    if homeGoals == awayGoals:
+                        drawCount += 1
                     goalCount += homeGoals
                     homeGoalCount += homeGoals
                     homeGoalsConcededCount += awayGoals
                 else:
                     if awayGoals > homeGoals:
                         awayWinCount += 1
+                    if awayGoals == homeGoals:
+                        drawCount += 1
                     goalCount += awayGoals
                     awayGoalCount += awayGoals
                     awayGoalsConcededCount += homeGoals
