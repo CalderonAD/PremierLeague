@@ -92,6 +92,7 @@ for fixture in range(1, n):
 
 matchDay = 1
 print("------------------------------------------------------------")
+# Work out results based on poisson distribution
 for fixture in fixtures:
     print("Matchday " + str(matchDay) + ":")
     matchDay += 1
