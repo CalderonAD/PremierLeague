@@ -3,9 +3,10 @@ import numpy as np
 
 teams = ["Arsenal", "Bournemouth", "Brighton", "Burnley", "Chelsea", "Crystal Palace", "Everton", "Huddersfield", "Leicester", "Liverpool", "Man City", "Man United", "Newcastle", "Southampton", "Stoke", "Swansea", "Tottenham", "Watford", "West Brom", "West Ham"]
 teamData = []
+teamPositionData = []
 
 # Simulation Variables
-numSeasons = 1000
+numSeasons = 10000
 searchTeam = False
 searchTeamName = "Man City"
 
@@ -86,6 +87,9 @@ overallAvgHomeConceded = totalAvgHomeConceded / len(teams)
 overallAvgAwayConceded = totalAvgAwayConceded / len(teams)
 
 print("------------------------------------------------------------")
+for team in teamData:
+    teamPositionData.append({"Name": team["Name"], "PositionData": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]})
+
 for i in range(numSeasons):
     print("--- Season " + str(i+1) + " ---")
     #Generate Random fixture list
@@ -198,8 +202,12 @@ for i in range(numSeasons):
     print('{:^10s}{:<18s}{:^18s}{:^18s}{:^18s}{:^18s}{:^18s}{:^18s}{:^18s}{:^18s}{:^18s}'.format("Pos", "Name", "Wins", "Draws", "Losses", "Goals Scored" ," Home Goals", "Away Goals", "Goals Against", "Goal Difference", "Points"))
     print(dash)
     currPos = 1
+
     for team in generatedTeamData:
         i = currPos-1
+        for teamPosData in teamPositionData:
+            if team["Name"] == teamPosData["Name"]:
+                teamPosData["PositionData"][i] += 1
         totalGoals[i] += team["GoalsScored"]
         totalPoints[i] += team["Points"]
         if highestGoals[i] < team["GoalsScored"]:
@@ -236,5 +244,13 @@ for i in range(len(totalPoints)):
 
     print('{:^18d}{:^18d}{:^18d}{:^18d}{:^18d}{:^18d}{:^18d}'.format(currPos, mostGoals, leastGoals, avgGoals, mostPoints, leastPoints, avgPoints))
 print("--------------------------------------------------------------------------------------------------------------------------------")
+print(" ")
+print(" ")
+print("--------------------------------------------------------------------------------------------------------------------------------")
+print('{:^18s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}{:^8s}'.format("Name", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th"))
+print("--------------------------------------------------------------------------------------------------------------------------------")
+currPos = 1
+for currTeam in teamPositionData:
+    print('{:^18s}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}{:^8d}'.format(currTeam["Name"], currTeam["PositionData"][0], currTeam["PositionData"][1], currTeam["PositionData"][2], currTeam["PositionData"][3], currTeam["PositionData"][4], currTeam["PositionData"][5], currTeam["PositionData"][6], currTeam["PositionData"][7], currTeam["PositionData"][8], currTeam["PositionData"][9], currTeam["PositionData"][10], currTeam["PositionData"][11], currTeam["PositionData"][12], currTeam["PositionData"][13], currTeam["PositionData"][14], currTeam["PositionData"][15], currTeam["PositionData"][16], currTeam["PositionData"][17], currTeam["PositionData"][18], currTeam["PositionData"][19]))
+    currPos += 1
 print("========================================================================================================================================================================================================")
-
